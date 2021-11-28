@@ -1,9 +1,15 @@
 // include packages needed for this application
 const inquirer = require("inquirer");
 const fs = require("fs");
+const licenseSection = require("./utils/licenseSection");
 
 // create an array of questions for user input
 const questions = [
+  {
+    type: "input",
+    message: "What is your name?",
+    name: "name",
+  },
   {
     type: "input",
     message: "What is your GitHub username?",
@@ -39,83 +45,171 @@ const questions = [
     name: "usage",
   },
   {
-    type: "checkbox",
+    type: "list",
     message: "Please choose your license:",
-    choices: ["MIT", "ISC", "GNU GPLv3", "none"],
+    choices: ["MIT", "ISC", "none"],
     name: "license",
   },
   {
     type: "confirm",
-    message: "Include Table of Contents?",
-    name: "toc",
+    message: "Do you need to include a link to the deployed application?",
+    name: "linksection",
+  },
+  {
+    type: "confirm",
+    message: "Do you need to list collaborators?",
+    name: "collab",
   },
   {
     type: "confirm",
     message:
-      "Include section to list collaborators? (You will have to edit this section manually if you choose to include it in the template.)",
-    name: "credits",
+      "Would you like to include a list of features for your application.",
+    name: "listoffeatures",
   },
   {
     type: "confirm",
     message:
-      "Include section to list features? (You will have to edit this section manually if you choose to include it in the template.)",
-    name: "features",
+      "Would you like to include examples of tests that can be run on your application?",
+    name: "testssection",
   },
   {
     type: "confirm",
     message:
-      "Include a section to provide examples on how to run tests for your program? (You will have to edit this section manually if you choose to include it in the template.)",
-    name: "tests",
+      "Would you like to include examples ideas of future updates that might be made to your application?",
+    name: "iceboxsection",
   },
 ];
 
-// // create a function to write README file
-function writeToFile(userResponse) {
-  return `
-# ${userResponse.title}
----
+// // create a function to write README file passing in the userResponse, credits, features, tests and icebox parameters
+function writeToFile(userResponse, credits, features, tests, icebox, link) {
+  return `# ${userResponse.title} ![License: ${
+    userResponse.license
+  }](https://img.shields.io/badge/license-${
+    userResponse.license
+  }-orange?style=for-the-badge&logo=appveyor)
+  ---
+  
+  ## Description
+  
+  ${userResponse.description}
+  ---
+  
+  ## Table of Contents
+  
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [License](#license)
+  * [Link to Deployed](#link)
+  * [Credits](#credits)
+  * [Features](#features)
+  * [Tests](#tests)
+  * [Icebox](#icebox)
+  * [Questions?](#questions)
+  
+  
+  ## Installation
+  \`\`\`
+  ${userResponse.installation}
+  \`\`\`
+  
+  ## Usage
+  
+  ${userResponse.usage}
+  
+  ## License
 
-## Description
-${userResponse.description}
----
+  ${licenseSection(userResponse)}
+  
+  ## Link to Deployed
+  
+  ${link ? link : "N/A"}
+  
+  ## Credits
+  
+  ${credits ? credits : "N/A"}
+  
+  ## Features
+  
+  ${features ? features : "N/A"}
+  
+  ## Tests
+  \`\`\`
+  ${tests ? tests : "N/A"}
+  \`\`\`
 
-### Installation
-${userResponse.installation}
-
-### Usage
-${userResponse.usage}
-
-### License
-${userResponse.license}
-
-#### Questions
-If you have any questions about the project, please reach out to me!
-GitHub: [${userResponse.github}](https://github.com/${userResponse.github})
-Email: [Send me an email](${userResponse.email})`;
+  ## Icebox
+  
+  ${icebox ? icebox : "N/A"}
+  
+  #### Questions
+  
+  If you have any questions about the project, please reach out to me!
+  
+  GitHub: [Go to my GitHub](https://github.com/${userResponse.github})
+  
+  Email: [Send me an Email](${userResponse.email})`;
 }
 
 // create a function to initialize app
 function init() {
+  // ask a new set of questions based on user answers to the first set of questions - using when key to gain acces to the users original answer via an annonymous method
   inquirer.prompt(questions).then((userResponse) =>
-    fs.writeFile("README.md", writeToFile(userResponse), (err) => {
-      err ? console.log(err) : console.log("File was written!");
-    })
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "Please include your application link here:",
+          name: "link",
+          when: function (_) {
+            return userResponse.linksection;
+          },
+        },
+        {
+          type: "input",
+          message: "Please list your collaborators here:",
+          name: "credits",
+          when: function (_) {
+            return userResponse.collab;
+          },
+        },
+        {
+          type: "input",
+          message: "Please list your application's features here:",
+          name: "features",
+          when: function (_) {
+            return userResponse.listoffeatures;
+          },
+        },
+        {
+          type: "input",
+          message: "Please list your test examples here:",
+          name: "tests",
+          when: function (_) {
+            return userResponse.testssection;
+          },
+        },
+        {
+          type: "input",
+          message: "Please list your Icebox ideas here:",
+          name: "icebox",
+          when: function (_) {
+            return userResponse.iceboxsection;
+          },
+        },
+      ])
+      // passes in the values for the above keys not attatched to questions variable
+      .then(({ credits, features, tests, icebox, link }) => {
+        // uses writeFile method of the file system object to create a readme.md document, run the function writeToFile while passing the userResponse, credits, features, test, and icebox parameters, the last argument sets up the async operation so if it receives an error response back it displays the error in the console log, and if it doesnt receive an error it runs a success message in the console log.
+        fs.writeFile(
+          "README.md",
+          writeToFile(userResponse, credits, features, tests, icebox, link),
+          (err) => {
+            err ? console.log(err) : console.log("File was written!");
+          }
+        );
+      })
   );
 }
 
 // call to initialize app
 init();
-
-/* psuedo code
-
-if statement (or for...) to insert table of content when user confirms?
-
-if statement (or for...) to include credits section if you have collaborators on the project?
-
-create and add license badge
-create if statement (or for...) to add the license description to the license section that corresponds with the license option the user chooses.
-add corresponding license badge to top of readme
-
-if statement (or for...) to include features section based on the user chocie
-
-*/

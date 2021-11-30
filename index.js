@@ -141,7 +141,7 @@ function writeToFile(userResponse, credits, features, tests, icebox, link) {
   
   ${icebox ? icebox : "N/A"}
   
-  #### Questions
+  #### Questions?
   
   If you have any questions about the project, please reach out to me!
   

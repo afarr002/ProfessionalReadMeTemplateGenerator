@@ -99,12 +99,15 @@ function writeToFile(userResponse, credits, features, tests, icebox, link) {
   * [Installation](#installation)
   * [Usage](#usage)
   * [License](#license)
-  * [Link to Deployed](#link)
   * [Credits](#credits)
   * [Features](#features)
   * [Tests](#tests)
   * [Icebox](#icebox)
   * [Questions?](#questions)
+  
+  ## Link to Deployed
+  
+  ${link ? link : "N/A"}
   
   
   ## Installation
@@ -119,10 +122,6 @@ function writeToFile(userResponse, credits, features, tests, icebox, link) {
   ## License
 
   ${licenseSection(userResponse)}
-  
-  ## Link to Deployed
-  
-  ${link ? link : "N/A"}
   
   ## Credits
   
@@ -201,7 +200,7 @@ function init() {
       .then(({ credits, features, tests, icebox, link }) => {
         // uses writeFile method of the file system object to create a readme.md document, run the function writeToFile while passing the userResponse, credits, features, test, and icebox parameters, the last argument sets up the async operation so if it receives an error response back it displays the error in the console log, and if it doesnt receive an error it runs a success message in the console log.
         fs.writeFile(
-          "README.md",
+          "README.txt",
           writeToFile(userResponse, credits, features, tests, icebox, link),
           (err) => {
             err ? console.log(err) : console.log("File was written!");

@@ -52,30 +52,29 @@ const questions = [
   },
   {
     type: "confirm",
-    message: "Do you need to include a link to the deployed application?",
+    message: "Will you be including a link to the deployed application?",
     name: "linksection",
   },
   {
     type: "confirm",
-    message: "Do you need to list collaborators?",
+    message: "Will you be including a list of collaborators?",
     name: "collab",
   },
   {
     type: "confirm",
-    message:
-      "Would you like to include a list of features for your application.",
+    message: "Will you be including a list of features for your application?",
     name: "listoffeatures",
   },
   {
     type: "confirm",
     message:
-      "Would you like to include examples of tests that can be run on your application?",
+      "Will you be including examples of tests that can be run on your application?",
     name: "testssection",
   },
   {
     type: "confirm",
     message:
-      "Would you like to include examples ideas of future updates that might be made to your application?",
+      "Will you be including example ideas of future updates that will be implimented to your application?",
     name: "iceboxsection",
   },
 ];
